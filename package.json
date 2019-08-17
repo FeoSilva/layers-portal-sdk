@@ -1,0 +1,21 @@
+{
+  "name": "layers-sdk",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/layers-digital/layers-sdk-javascript",
+  "author": "Layers Education",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "babel-minify-webpack-plugin": "^0.3.1",
+    "uuid": "^3.3.2",
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.8.0",
+    "axios": "^0.19.0"
+  },
+  "description": "Layers Education Official SDK for Web platforms",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server"
+  }
+}

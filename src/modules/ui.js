@@ -21,7 +21,7 @@ class UIModule extends BaseModule {
       return
     }
 
-    return await method.find(this)(payload)
+    return await method.bind(this)(payload)
   }
 
   async _errorListener(error) {

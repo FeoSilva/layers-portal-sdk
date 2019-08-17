@@ -2,10 +2,10 @@ import BaseModule from './base'
 
 class RootModule extends BaseModule {
   async _init() {
-    console.log('loading root...')
+    // TODO
   }
   async setup(data) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    //
   }
 }
 

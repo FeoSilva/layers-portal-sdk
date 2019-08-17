@@ -3,15 +3,30 @@ class CrossWindowCommunication {
     this.pendingMessages = {}
     this.errorListener = options.errorListener || (() => undefined)
     this.requestListener = options.requestListener || (() => undefined)
-    this.targetWindow = options.targetWindow || window.parent
+    this.targetWindow = options.targetWindow || window.parent,
+    this.version = options.version || SDK_VERSION
+
+    this._isInitialized = false
   }
 
   init() {
-    const handler = this._eventHandler.bind(this)
+    if (this._isInitialized) {
+      return
+    }
+
+    this._bindedEventHandler = this._eventHandler.bind(this)
     if (window.addEventListener) {
-      window.addEventListener('message', handler, false)
+      window.addEventListener('message', this._bindedEventHandler, false)
     } else if (window.attachEvent) {
-      window.attachEvent('on' + 'message', handler)
+      window.attachEvent('on' + 'message', this._bindedEventHandler)
+    }
+
+    this._isInitialized = true
+  }
+
+  destroy() {
+    if (this._bindedEventHandler) {
+      window.removeEventListener('remove', this._bindedEventHandler, false)
     }
   }
 
@@ -21,13 +36,14 @@ class CrossWindowCommunication {
       const timeoutId = setTimeout(() => { reject(new Error(`Message ${id} timed out!`)) }, timeout)
       this.pendingMessages[id] = { resolve, reject, timeoutId }
 
-      this.targetWindow.postMessage({ id, method, payload, version: SDK_VERSION, type: 'request' })
+      this.targetWindow.postMessage({ id, method, payload, version: this.version, type: 'request' }, '*')
     })
     return promise
   }
 
   _eventHandler(event) {
     const message = event.data
+    const sourceWindow = event.source
 
     if (!message.id) {
       this.errorListener(new Error('Message received without id!'))
@@ -37,7 +53,7 @@ class CrossWindowCommunication {
     switch (message.type) {
       case 'response': this._handleResponseMessage(message); return;
       case 'error': this._handleErrorMessage(message); return;
-      case 'request': this._handleRequestMessage(message); return;
+      case 'request': this._handleRequestMessage(message, sourceWindow); return;
       default: this.errorListener(new Error(`Message received with unknown type "${message.type}"!`))
     }
   }
@@ -46,7 +62,6 @@ class CrossWindowCommunication {
     const { id, payload } = message
 
     if (!(id in this.pendingMessages)) {
-      this.errorListener(new Error(`Received response message with inexistent id ${id}!`))
       return
     }
 
@@ -72,14 +87,14 @@ class CrossWindowCommunication {
     reject(payload)
   }
 
-  _handleRequestMessage(message) {
+  _handleRequestMessage(message, sourceWindow) {
     const { id, method, payload } = message
 
     Promise.resolve(this.requestListener(method, payload))
       .then(res => {
-        this.targetWindow.postMessage({ id, payload: res, version: SDK_VERSION, type: 'response' })
+        sourceWindow.postMessage({ id, payload: res, version: this.version, type: 'response' }, '*')
       }).catch(error => {
-        this.targetWindow.postMessage({ id, payload: error, version: SDK_VERSION, type: 'error' })
+        sourceWindow.postMessage({ id, payload: error, version: this.version, type: 'error' }, '*')
       })
   }
 }

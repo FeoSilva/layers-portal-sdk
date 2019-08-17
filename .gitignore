@@ -60,5 +60,5 @@ typings/
 # next.js build output
 .next
 
-# Dist
-dist
+iframe.html
+parent.html
