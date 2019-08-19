@@ -1,4 +1,4 @@
-# Layers SDK for JavaScript
+# Layers SDK for JavaScript v1
 
 ![npm](https://img.shields.io/npm/v/layers-sdk)
 ![NPM](https://img.shields.io/npm/l/layers-sdk)
@@ -12,6 +12,14 @@
 
 Example:
 ```javascript
+/* Setting up Layers SDK */
+await Layers('boot', {
+  appId: "", // Your APP's ID
+  appKey: "" // Your APP's secret key
+})
+
+
+/* Creating a post */
 const promise = Layers.ui('createPost', {
   type: "event",
   title: "Post Title",

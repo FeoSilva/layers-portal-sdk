@@ -4,7 +4,7 @@ class RootModule extends BaseModule {
   async _init() {
     // TODO
   }
-  async setup(data) {
+  async boot(data) {
     //
   }
 }
