@@ -26,6 +26,9 @@ const promise = Layers.ui('createPost', {
   text: "**Post body (markdown)**",
 })
 
+/* Closing window */
+const promise = Layers.ui('close')
+
 /* Using async/await */
 try {
   const result = await promise
