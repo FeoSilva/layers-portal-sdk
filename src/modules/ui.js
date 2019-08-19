@@ -25,7 +25,7 @@ class UIModule extends BaseModule {
   }
 
   async _errorListener(error) {
-    console.error(error)
+    console.error('Error listener:', error)
   }
 
   async createPost(data) {

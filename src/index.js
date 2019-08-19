@@ -5,12 +5,12 @@ if (window.Layers && Layers.q) {
   for (let params of Layers.q) {
     _LayersInner(...params)
   }
-  Layers.q = []
+  delete Layers.q
 
   // events consumed
   Layers = function () { return _Layers('root', ...arguments) }
-  Layers.UI = function () { return _Layers('ui', ...arguments) }
-  Layers.API = function () { return _Layers('api', ...arguments) }
+  Layers.ui = function () { return _Layers('ui', ...arguments) }
+  Layers.api = function () { return _Layers('api', ...arguments) }
 }
 
 function _Layers(moduleName, method, payload) {
