@@ -30,7 +30,7 @@ UIModule.prototype._errorListener = function(error) {
 }
 
 UIModule.prototype.createPost = function(data) {
-  return this.parentCommunication.send('createPost', data, 1000)
+  return this.parentCommunication.send('createPost', data)
 }
 
 UIModule.prototype.close = function(data) {
