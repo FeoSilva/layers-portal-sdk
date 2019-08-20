@@ -31,6 +31,10 @@ class UIModule extends BaseModule {
   async createPost(data) {
     return await this.parentCommunication.send('createPost', data)
   }
+
+  async close(data) {
+    return await this.parentCommunication.send('close', data)
+  }
 }
 
 export default UIModule
