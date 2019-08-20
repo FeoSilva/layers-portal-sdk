@@ -1,9 +1,10 @@
 import BaseModule from './base'
 
-class APIModule extends BaseModule {
-  async setup(data) {
-    // TODO
-  }
+function APIModule() {}
+APIModule.prototype = new BaseModule()
+
+APIModule.prototype.setup = function (data) {
+  // TODO
 }
 
 export default APIModule

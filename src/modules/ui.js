@@ -1,40 +1,40 @@
 import BaseModule from './base'
 import CrossWindowCommunication from '../utils/crossWindowCommunication'
 
-class UIModule extends BaseModule {
-  async _init() {
-    if (!window) {
-      throw new Error('Can not use UI module without "window"')
-    }
+function UIModule() {}
+UIModule.prototype = new BaseModule()
 
-    this.parentCommunication = new CrossWindowCommunication({
-      requestListener: this._requestListener.bind(this),
-      errorListener: this._errorListener.bind(this)
-    })
-    this.parentCommunication.init()
+UIModule.prototype._init = function() {
+  if (!window) {
+    throw new Error('Can not use UI module without "window"')
   }
 
-  async _requestListener(methodName, payload) {
-    const method = this[methodName]
-    if (!method) {
-      this._errorListener(new Error(`Unknown request method ${methodName}`))
-      return
-    }
+  this.parentCommunication = new CrossWindowCommunication({
+    requestListener: this._requestListener.bind(this),
+    errorListener: this._errorListener.bind(this)
+  })
+  this.parentCommunication.init()
+}
 
-    return await method.bind(this)(payload)
+UIModule.prototype._requestListener = function (methodName, payload) {
+  var method = this[methodName]
+  if (!method) {
+    throw new Error(`Unknown request method ${methodName}`)
   }
 
-  async _errorListener(error) {
-    console.error('Error listener:', error)
-  }
+  return method.bind(this)(payload)
+}
 
-  async createPost(data) {
-    return await this.parentCommunication.send('createPost', data)
-  }
+UIModule.prototype._errorListener = function(error) {
+  console.error('Error listener:', error)
+}
 
-  async close(data) {
-    return await this.parentCommunication.send('close', data)
-  }
+UIModule.prototype.createPost = function(data) {
+  return this.parentCommunication.send('createPost', data, 1000)
+}
+
+UIModule.prototype.close = function(data) {
+  return this.parentCommunication.send('close', data)
 }
 
 export default UIModule

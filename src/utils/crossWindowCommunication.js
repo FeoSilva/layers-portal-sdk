@@ -1,102 +1,134 @@
-class CrossWindowCommunication {
-  constructor(options) {
-    this.pendingMessages = {}
-    this.errorListener = options.errorListener || (() => undefined)
-    this.requestListener = options.requestListener || (() => undefined)
-    this.targetWindow = options.targetWindow || window.parent,
-    this.version = options.version || SDK_VERSION
+import MessageSerializer from './messageSerializer'
 
-    this._isInitialized = false
+function CrossWindowCommunication(options) {
+  this.pendingMessages = {}
+  this.errorListener = options.errorListener || (function () { })
+  this.requestListener = options.requestListener || (function () { })
+
+  this.targetWindow = options.targetWindow || window.parent,
+    this.targetOrigin = options.targetOrigin || '*'
+
+  this.version = options.version || SDK_VERSION
+
+  this._isInitialized = false
+}
+
+CrossWindowCommunication.prototype.init = function () {
+  if (this._isInitialized) {
+    return
   }
 
-  init() {
-    if (this._isInitialized) {
-      return
-    }
-
-    this._bindedEventHandler = this._eventHandler.bind(this)
-    if (window.addEventListener) {
-      window.addEventListener('message', this._bindedEventHandler, false)
-    } else if (window.attachEvent) {
-      window.attachEvent('on' + 'message', this._bindedEventHandler)
-    }
-
-    this._isInitialized = true
+  this.destroy()
+  this._bindedEventHandler = this._eventHandler.bind(this)
+  if (window.addEventListener) {
+    window.addEventListener('message', this._bindedEventHandler, false)
+  } else if (window.attachEvent) {
+    window.attachEvent('onmessage', this._bindedEventHandler)
   }
 
-  destroy() {
-    if (this._bindedEventHandler) {
-      window.removeEventListener('remove', this._bindedEventHandler, false)
+  this._isInitialized = true
+}
+
+CrossWindowCommunication.prototype.destroy = function () {
+  if (this._bindedEventHandler) {
+    window.removeEventListener('remove', this._bindedEventHandler, false)
+    this._bindedEventHandler = null
+  }
+}
+
+CrossWindowCommunication.prototype.send = function (method, payload, timeout) {
+  timeout = timeout || 30000
+  var promise = new Promise((resolve, reject) => {
+    var id = generateId()
+    var timeoutId = setTimeout(() => { reject(new Error(`Message ${id} timed out!`)) }, timeout)
+    this.pendingMessages[id] = { resolve: resolve, reject: reject, timeoutId: timeoutId }
+
+    var message = {
+      id: id,
+      method: method,
+      payload: payload,
+      version: this.version,
+      type: 'request'
     }
+    this._postMessage(this.targetWindow, message, this.targetOrigin)
+  })
+  return promise
+}
+
+CrossWindowCommunication.prototype._postMessage = function (window, message, targetOrigin) {
+  var serializedMessage = MessageSerializer.serialize(message)
+  window.postMessage(serializedMessage, targetOrigin)
+}
+
+CrossWindowCommunication.prototype._eventHandler = function (event) {
+  var message
+  try {
+    message = MessageSerializer.deserialize(event.data)
+  } catch (error) {
+    return // Ignore malformed messages, since it probably shouldn't be handled by SDK
   }
 
-  async send(method, payload, timeout = 30000) {
-    const promise = new Promise((resolve, reject) => {
-      const id = generateId()
-      const timeoutId = setTimeout(() => { reject(new Error(`Message ${id} timed out!`)) }, timeout)
-      this.pendingMessages[id] = { resolve, reject, timeoutId }
+  if (!message.id) {
+    this.errorListener(new Error('Message received without id!'))
+    return
+  }
 
-      this.targetWindow.postMessage({ id, method, payload, version: this.version, type: 'request' }, '*')
+  switch (message.type) {
+    case 'response': this._handleResponseMessage(message); return;
+    case 'error': this._handleErrorMessage(message); return;
+    case 'request': this._handleRequestMessage(message, event.source); return;
+    default: this.errorListener(new Error(`Message received with unknown type "${message.type}"!`))
+  }
+}
+
+CrossWindowCommunication.prototype._handleResponseMessage = function (message) {
+  var id = message.id
+  var payload = message.payload
+
+  if (!(id in this.pendingMessages)) {
+    return
+  }
+
+  var pendingMessage = this.pendingMessages[id]
+  var resolve = pendingMessage.resolve
+  var timeoutId = pendingMessage.timeoutId
+
+  clearTimeout(timeoutId)
+  delete this.pendingMessages[id]
+
+  resolve(payload)
+}
+
+CrossWindowCommunication.prototype._handleErrorMessage = function (message) {
+  var id = message.id
+  var error = new Error(message.payload)
+
+  if (!(id in this.pendingMessages)) {
+    return
+  }
+
+  var pendingMessage = this.pendingMessages[id]
+  var reject = pendingMessage.reject
+  var timeoutId = pendingMessage.timeoutId
+
+  clearTimeout(timeoutId)
+  delete this.pendingMessages[id]
+
+  reject(error)
+}
+
+CrossWindowCommunication.prototype._handleRequestMessage = function (message, sourceWindow) {
+  var id = message.id
+  var method = message.method
+  var payload = message.payload
+
+  var promise = this.requestListener(method, payload)
+  Promise.resolve(promise)
+    .then(res => {
+      this._postMessage(sourceWindow, { id: id, payload: res, version: this.version, type: 'response' }, '*')
+    }).catch(error => {
+      this._postMessage(sourceWindow, { id: id, payload: error.message, version: this.version, type: 'error' }, '*')
     })
-    return promise
-  }
-
-  _eventHandler(event) {
-    const message = event.data
-    const sourceWindow = event.source
-
-    if (!message.id) {
-      this.errorListener(new Error('Message received without id!'))
-      return
-    }
-
-    switch (message.type) {
-      case 'response': this._handleResponseMessage(message); return;
-      case 'error': this._handleErrorMessage(message); return;
-      case 'request': this._handleRequestMessage(message, sourceWindow); return;
-      default: this.errorListener(new Error(`Message received with unknown type "${message.type}"!`))
-    }
-  }
-
-  _handleResponseMessage(message) {
-    const { id, payload } = message
-
-    if (!(id in this.pendingMessages)) {
-      return
-    }
-
-    const { resolve, timeoutId } = this.pendingMessages[id]
-    clearTimeout(timeoutId)
-    delete this.pendingMessages[id]
-
-    resolve(payload)
-  }
-
-  _handleErrorMessage(message) {
-    const { id, payload } = message
-
-    if (!(id in this.pendingMessages)) {
-      this.errorListener(new Error(`Received error message with inexistent id ${id}!`))
-      return
-    }
-
-    const { reject, timeoutId } = this.pendingMessages[id]
-    clearTimeout(timeoutId)
-    delete this.pendingMessages[id]
-
-    reject(payload)
-  }
-
-  _handleRequestMessage(message, sourceWindow) {
-    const { id, method, payload } = message
-
-    Promise.resolve(this.requestListener(method, payload))
-      .then(res => {
-        sourceWindow.postMessage({ id, payload: res, version: this.version, type: 'response' }, '*')
-      }).catch(error => {
-        sourceWindow.postMessage({ id, payload: error, version: this.version, type: 'error' }, '*')
-      })
-  }
 }
 
 function generateId() {

@@ -6,7 +6,7 @@
 
 ```html
 <script>
-!function(){var n;window.Layers=window.Layers||(n=function(n,t,e){return new Promise((r,u)=>{func.q.push([r,u,n,t,e])})},func=function(){return n("root",...arguments)},func.q=[],func.ui=function(){return n("ui",...arguments)},func.api=function(){return n("api",...arguments)},func);var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://unpkg.com/layers-sdk@1/dist/main.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
+!function(){var n;window.Layers=window.Layers||(n=function(n,t,e){return new Promise((r,u)=>{func.q.push([r,u,n,t,e])})},func=function(){return n("root",...arguments)},func.q=[],func.ui=function(){return n("ui",...arguments)},func.api=function(){return n("api",...arguments)},func);var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://unpkg.com/layers-sdk@2/dist/app.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
 </script>
 ```
 
@@ -21,7 +21,7 @@ await Layers('boot', {
 
 /* Creating a post */
 const promise = Layers.ui('createPost', {
-  type: "event",
+  type: "message",
   title: "Post Title",
   text: "**Post body (markdown)**",
 })

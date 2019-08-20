@@ -1,12 +1,13 @@
 import BaseModule from './base'
 
-class RootModule extends BaseModule {
-  async _init() {
-    // TODO
-  }
-  async boot(data) {
-    //
-  }
+function RootModule() {}
+RootModule.prototype = new BaseModule()
+
+RootModule.prototype._init = function () {
+  // TODO
+}
+RootModule.prototype.boot = function (data) {
+  // TODO
 }
 
 export default RootModule
