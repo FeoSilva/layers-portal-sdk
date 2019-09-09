@@ -1,6 +1,6 @@
 {
   "name": "layers-sdk",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "main": "index.js",
   "repository": "https://github.com/layers-digital/layers-sdk-javascript",
   "author": "Layers Education",
