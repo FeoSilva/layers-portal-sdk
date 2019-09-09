@@ -26,6 +26,9 @@ const promise = Layers.ui('createPost', {
   text: "**Post body (markdown)**",
 })
 
+/* Creating a group */
+const promise = Layers.ui('createGroup')
+
 /* Closing window */
 const promise = Layers.ui('close')
 
