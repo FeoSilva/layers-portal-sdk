@@ -37,4 +37,8 @@ UIModule.prototype.close = function(data) {
   return this.parentCommunication.send('close', data)
 }
 
+UIModule.prototype.createGroup = function(data) {
+  return this.parentCommunication.send('createGroup', data)
+}
+
 export default UIModule
