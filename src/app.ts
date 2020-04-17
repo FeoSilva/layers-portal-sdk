@@ -1,7 +1,7 @@
 import LocationWatcher from "./util/LocationWatcher"
 import TitleWatcher from "./util/TitleWatcher"
 import { createBridge } from './bridge'
-import Bridge from "./bridge/base"
+import Bridge, { SetupResponse } from "./bridge/base"
 
 const SDK_METHOD_SYMBOL = Symbol("IS_SDK_METHOD")
 
@@ -36,6 +36,7 @@ export class LayersSDKCore {
   private parentBridge: Bridge
   private locationWatcher: LocationWatcher
   private titleWatcher: TitleWatcher
+  private setupResult: SetupResponse
 
   constructor() {
     if (!window) {
@@ -62,7 +63,7 @@ export class LayersSDKCore {
       return "pong"
     })
 
-    const setupResult = await this.parentBridge.setup({
+    this.setupResult = await this.parentBridge.setup({
       settings,
       location: this.locationWatcher.getLocation(),
       title: this.titleWatcher.getTitle()
@@ -70,16 +71,16 @@ export class LayersSDKCore {
     
     this.ready = true
     this.eventTarget.dispatchEvent(new CustomEvent("ready", {
-      detail: setupResult
+      detail: this.setupResult
     }))
     
-    if (!setupResult.bridgeConnected) {
+    if (!this.setupResult.bridgeConnected) {
       return;
     }
 
     this.connected = true
     this.eventTarget.dispatchEvent(new CustomEvent("connected", {
-      detail: setupResult
+      detail: this.setupResult
     }))
 
     this.locationWatcher.addListener(location => {
@@ -104,6 +105,11 @@ export class LayersSDKCore {
 
   @SdkMethod()
   protected onReady(callback: Function) {
+    if (this.ready) {
+      callback()
+      return
+    }
+    
     this.eventTarget.addEventListener("ready", (event: CustomEvent) => {
       callback(event.detail)
     })
@@ -111,6 +117,10 @@ export class LayersSDKCore {
 
   @SdkMethod()
   protected onConnected(callback: Function) {
+    if (this.connected) {
+      callback()
+      return
+    }
     this.eventTarget.addEventListener("connected", (event: CustomEvent) => {
       callback(event.detail)
     })
