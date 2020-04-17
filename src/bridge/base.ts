@@ -1,7 +1,7 @@
-import { LayersSettings } from "../app"
+import { LayersOptions } from "../app"
 
 export interface SetupRequest {
-  settings: LayersSettings
+  options: LayersOptions
   location: string
   title: string
 }
@@ -15,7 +15,7 @@ export default abstract class Bridge {
   ready: boolean
   
   protected requestHandlers: Map<string, (any) => any>
-  protected settings: LayersSettings
+  protected options: LayersOptions
 
   constructor() {
     this.requestHandlers = new Map()
@@ -39,7 +39,7 @@ export default abstract class Bridge {
       throw new Error("LayersSDK already set up!")
     }
     
-    this.settings = params.settings
+    this.options = params.options
     const response = await this.send("setup", params)
 
     if (response.success) {

@@ -5,7 +5,7 @@ import Bridge, { SetupResponse } from "./bridge/base"
 
 const SDK_METHOD_SYMBOL = Symbol("IS_SDK_METHOD")
 
-export interface LayersSettings {
+export interface LayersOptions {
   // ID do App
   appId: string;
 
@@ -32,7 +32,7 @@ export class LayersSDKCore {
   connected: boolean
 
   private eventTarget: EventTarget
-  private settings: LayersSettings
+  private options: LayersOptions
   private parentBridge: Bridge
   private locationWatcher: LocationWatcher
   private titleWatcher: TitleWatcher
@@ -51,12 +51,12 @@ export class LayersSDKCore {
   }
 
   @SdkMethod()
-  public async setup(settings: LayersSettings) {
+  public async setup(options: LayersOptions) {
     if (this.ready) {
       throw new Error("LayersSDK already set up!")
     }
 
-    this.settings = settings
+    this.options = options
 
     this.parentBridge = createBridge()
     this.parentBridge.addRequestHandler("ping", () => {
@@ -64,7 +64,7 @@ export class LayersSDKCore {
     })
 
     this.setupResult = await this.parentBridge.setup({
-      settings,
+      options: options,
       location: this.locationWatcher.getLocation(),
       title: this.titleWatcher.getTitle()
     })
@@ -168,7 +168,7 @@ export class LayersSDKCore {
 declare global {
   interface Window {
     Layers: Function;
-    LayersSettings: LayersSettings;
+    LayersOptions: LayersOptions;
   }
 }
 
@@ -176,8 +176,8 @@ declare global {
 const commandQueue: [(any) => any, (any) => any, string, any][] = (<any>window.Layers)?.q
 
 const sdkCore = new LayersSDKCore()
-if (window.LayersSettings) {
-  sdkCore.setup(window.LayersSettings)
+if (window.LayersOptions) {
+  sdkCore.setup(window.LayersOptions)
 }
 
 // Expose "Layers" globally

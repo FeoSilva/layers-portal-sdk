@@ -6,7 +6,7 @@ describe('Ready/Connected events', () => {
       const setupCallArguments = $window['setup_call_arguments']
       assert(setupCallArguments)
       assert.deepEqual(setupCallArguments[0], {
-        settings: {
+        options: {
           appId: "test-app"
         },
         location: "http://0.0.0.0:30080/tests/e2e/static/child.html",

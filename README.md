@@ -6,7 +6,7 @@
 
 ```html
 <script>
-window.LayersSettings = {
+window.LayersOptions = {
   appId: "test-app"
 }
 !function(){if(!window.Layers){function s(n,r){return new Promise(function(e,t){s.q.push([e,t,n,r])})}s.q=[],window.Layers=s}var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="https://unpkg.com/layers-sdk@3/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
