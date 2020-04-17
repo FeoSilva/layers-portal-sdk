@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Child</title>
+</head>
+<body>
+  <h1>Child</h1>
+  <a href="#test1">#test1</a><br>
+  <a href="#test2">#test2</a>
+
+  <!-- Load Layers SDK -->
+  <script>
+    window.LayersSettings = {
+      appId: "test-app"
+    }
+    !function(){if(!window.Layers){function s(n,r){return new Promise(function(e,t){s.q.push([e,t,n,r])})}s.q=[],window.Layers=s}var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
+
+    Layers('onReady', function() {
+      window.onReady_call_arguments = arguments
+    })
+    Layers('onConnected', function() {
+      window.onConnected_call_arguments = arguments
+    })
+  </script>
+</body>
+</html>

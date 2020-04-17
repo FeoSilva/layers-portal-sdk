@@ -1,0 +1,1 @@
+!function(){if(!window.Layers){function e(t,n){return new Promise((function(r,s){e.q.push([r,s,t,n])}))}e.q=[],window.Layers=e}var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://unpkg.com/layers-sdk@3/dist/app.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)}();

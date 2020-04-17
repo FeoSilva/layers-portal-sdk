@@ -6,31 +6,37 @@
 
 ```html
 <script>
-!function(){var n;window.Layers=window.Layers||(n=function(n,t,e){return new Promise((r,u)=>{func.q.push([r,u,n,t,e])})},func=function(){return n("root",...arguments)},func.q=[],func.ui=function(){return n("ui",...arguments)},func.api=function(){return n("api",...arguments)},func);var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://unpkg.com/layers-sdk@2/dist/app.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
+window.LayersSettings = {
+  appId: "test-app"
+}
+!function(){if(!window.Layers){function s(n,r){return new Promise(function(e,t){s.q.push([e,t,n,r])})}s.q=[],window.Layers=s}var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="https://unpkg.com/layers-sdk@3/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
 </script>
 ```
 
 Example:
 ```javascript
-/* Setting up Layers SDK */
-await Layers('boot', {
-  appId: "", // Your APP's ID
-  appKey: "" // Your APP's secret key
+
+Layers('onReady', function () {
+  // Called when SDK is ready
+})
+
+Layers('onConnected', function () {
+  // Called when SDK connects with Layers
 })
 
 
 /* Creating a post */
-const promise = Layers.ui('createPost', {
+const promise = Layers('createPost', {
   type: "message",
   title: "Post Title",
   text: "**Post body (markdown)**",
 })
 
 /* Creating a group */
-const promise = Layers.ui('createGroup')
+const promise = Layers('createGroup')
 
 /* Closing window */
-const promise = Layers.ui('close')
+const promise = Layers('close')
 
 /* Using async/await */
 try {

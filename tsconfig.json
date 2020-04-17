@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "DOM",
+      "es6"
+    ],
+    "types": ["cypress"],
+    "moduleResolution": "node",
+    "experimentalDecorators": true
+  }
+}
