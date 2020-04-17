@@ -10,7 +10,7 @@ export function createBridge(): Bridge {
     })
   }
 
-  if (!window.frameElement) {
+  if (!window.frameElement && window.parent === window) {
     return new NullBridge()
   }
 

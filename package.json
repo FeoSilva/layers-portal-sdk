@@ -1,9 +1,10 @@
 {
   "name": "layers-sdk",
-  "version": "3.0.5",
+  "version": "3.0.7",
   "files": [
     "dist/app.js",
-    "dist/app.js.map"
+    "dist/app.js.map",
+    "src"
   ],
   "main": "index.js",
   "repository": "https://github.com/layers-digital/layers-sdk-javascript",
