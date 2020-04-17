@@ -106,7 +106,7 @@ export class LayersSDKCore {
   @SdkMethod()
   protected onReady(callback: Function) {
     if (this.ready) {
-      callback()
+      callback(this.setupResult)
       return
     }
     
@@ -118,7 +118,7 @@ export class LayersSDKCore {
   @SdkMethod()
   protected onConnected(callback: Function) {
     if (this.connected) {
-      callback()
+      callback(this.setupResult)
       return
     }
     this.eventTarget.addEventListener("connected", (event: CustomEvent) => {
