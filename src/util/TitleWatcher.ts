@@ -5,7 +5,7 @@ class TitleWatcher {
 
   constructor() {
     if (!document.querySelector('title')) {
-      setInterval(() => this.setup(), 0)
+      setTimeout(() => this.setup(), 0)
       return
     } else {
       this.setup()
