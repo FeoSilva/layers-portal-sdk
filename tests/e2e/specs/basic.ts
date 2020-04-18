@@ -9,7 +9,8 @@ describe('Ready/Connected events', () => {
         options: {
           appId: "test-app"
         },
-        location: "http://0.0.0.0:30080/tests/e2e/static/child.html",
+        url: "http://0.0.0.0:30080/tests/e2e/static/child.html",
+        state: null,
         title: "Child"
       })
     })
@@ -73,7 +74,10 @@ describe('Location detection', () => {
     }).then(() => {
       cy.getIframeBody().find("a").eq(0).click().then(() => {
         cy.wait(0).window().should(() => {
-          expect(updateStub).to.be.calledWith({ location: "http://0.0.0.0:30080/tests/e2e/static/child.html#test1" })
+          expect(updateStub).to.be.calledWith({
+            url: "http://0.0.0.0:30080/tests/e2e/static/child.html#test1",
+            state: null
+          })
         })
       })
     })

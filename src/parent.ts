@@ -5,7 +5,9 @@ const iframeElement: HTMLIFrameElement = <HTMLIFrameElement> document.getElement
 const iframeBridge = new IFrameBridge({
   targetOrigin: "*",
   targetWindow: iframeElement.contentWindow,
-  version: "0.1",
+})
+iframeBridge.addRequestHandler("update", data => {
+  console.log("update", data)
 })
 iframeBridge.addRequestHandler("setup", function () {
   window.setup_call_arguments = arguments

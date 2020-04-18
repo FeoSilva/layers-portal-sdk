@@ -1,4 +1,4 @@
-import LocationWatcher from "./util/LocationWatcher"
+import HistoryWatcher from "./util/HistoryWatcher"
 import TitleWatcher from "./util/TitleWatcher"
 import { createBridge } from './bridge'
 import Bridge, { SetupResponse } from "./bridge/base"
@@ -34,7 +34,7 @@ export class LayersSDKCore {
   private eventTarget: EventTarget
   private options: LayersOptions
   private parentBridge: Bridge
-  private locationWatcher: LocationWatcher
+  private historyWatcher: HistoryWatcher
   private titleWatcher: TitleWatcher
   private setupResult: SetupResponse
 
@@ -46,7 +46,7 @@ export class LayersSDKCore {
     this.ready = false
     this.connected = false
     this.eventTarget = new EventTarget()
-    this.locationWatcher = new LocationWatcher()
+    this.historyWatcher = new HistoryWatcher()
     this.titleWatcher = new TitleWatcher()
   }
 
@@ -65,7 +65,8 @@ export class LayersSDKCore {
 
     this.setupResult = await this.parentBridge.setup({
       options: options,
-      location: this.locationWatcher.getLocation(),
+      url: window.location.href,
+      state: history?.state,
       title: this.titleWatcher.getTitle()
     })
     
@@ -83,14 +84,14 @@ export class LayersSDKCore {
       detail: this.setupResult
     }))
 
-    this.locationWatcher.addListener(location => {
-      this.update({ location })
+    this.historyWatcher.addListener(params => {
+      this.update(params)
     })
     this.titleWatcher.addListener(title => {
       this.update({ title })
     })
 
-    this.locationWatcher.updateLocation()
+    this.historyWatcher.updateHistory()
     this.titleWatcher.updateTitle()
   }
 
@@ -132,7 +133,7 @@ export class LayersSDKCore {
   }
 
   @SdkMethod()
-  protected update(params: { location?: string, title?: string }) {
+  protected update(params: { url?: string, state?: any, title?: string }) {
     if (this.parentBridge.ready) {
       this.parentBridge.send("update", params)
     }

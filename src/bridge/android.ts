@@ -19,10 +19,6 @@ export interface Message {
   success: boolean;
 }
 
-export interface Options {
-  version: string
-}
-
 interface AndroidBridgeEvent extends CustomEvent {
   detail: Message
 }
@@ -32,12 +28,12 @@ export class AndroidBridge extends Bridge {
   private version: any
   private _bindedEventHandler: EventListener
 
-  constructor(options: Options) {
+  constructor() {
     super()
 
     this.pendingMessages = {}
 
-    this.version = options.version
+    this.version = "__LAYERS_SDK_VERSION__"
 
     this._bindedEventHandler = this._eventHandler.bind(this)
     window.addEventListener('layers:android', this._bindedEventHandler, false)

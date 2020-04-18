@@ -1,12 +1,14 @@
 import debounce from "./debounce"
 
-class LocationWatcher {
+type HistoryListener = ({ url: string, state: any }) => any
 
-  private listeners: ((location: string) => void)[] = [];
+class HistoryWatcher {
+
+  private listeners: HistoryListener[] = [];
 
   constructor() {
     const locationChangeCallback = debounce(() => {
-      this.updateLocation();
+      this.updateHistory();
     }, 0);
 
     // Monkey patch history functions
@@ -19,7 +21,7 @@ class LocationWatcher {
     window.addEventListener("replaceState", locationChangeCallback, false);
   }
 
-  public addListener(listener: (location: string) => void) {
+  public addListener(listener: HistoryListener) {
     this.listeners.push(listener)
   }
 
@@ -42,17 +44,15 @@ class LocationWatcher {
     history.replaceState = _wr("replaceState");
   }
 
-  updateLocation() {
-    const data = this.getLocation()
-    for (const listener of this.listeners) {
-      listener(data)
-    }
-  }
+  updateHistory() {
+    const url = window.location.href
+    const state = window?.history?.state
 
-  getLocation() {
-    return window.location.href
+    for (const listener of this.listeners) {
+      listener({ url, state })
+    }
   }
 
 }
 
-export default LocationWatcher
+export default HistoryWatcher

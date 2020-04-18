@@ -1,8 +1,12 @@
 import typescript from '@rollup/plugin-typescript';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import replace from '@rollup/plugin-replace';
 
 const plugins = [
+  replace({ 
+    __LAYERS_SDK_VERSION__: require("./package.json").version
+  }),
   typescript(),
   serve({
     port: 30080,

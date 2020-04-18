@@ -96,7 +96,7 @@ var Bridge = /** @class */ (function () {
                         if (this.ready) {
                             throw new Error("LayersSDK already set up!");
                         }
-                        this.settings = params.settings;
+                        this.options = params.options;
                         return [4 /*yield*/, this.send("setup", params)];
                     case 1:
                         response = _a.sent();
@@ -163,7 +163,7 @@ var IFrameBridge = /** @class */ (function (_super) {
         _this.pendingMessages = {};
         _this.targetWindow = options.targetWindow;
         _this.targetOrigin = options.targetOrigin;
-        _this.version = options.version;
+        _this.version = "3.0.12";
         _this._bindedEventHandler = _this._eventHandler.bind(_this);
         window.addEventListener('message', _this._bindedEventHandler, false);
         return _this;
@@ -299,7 +299,9 @@ var iframeElement = document.getElementById("child");
 var iframeBridge = new IFrameBridge({
     targetOrigin: "*",
     targetWindow: iframeElement.contentWindow,
-    version: "0.1",
+});
+iframeBridge.addRequestHandler("update", function (data) {
+    console.log("update", data);
 });
 iframeBridge.addRequestHandler("setup", function () {
     window.setup_call_arguments = arguments;

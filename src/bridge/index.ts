@@ -5,9 +5,7 @@ import { AndroidBridge } from "./android"
 
 export function createBridge(): Bridge {
   if (window.LayersAndroidBridge) {
-    return new AndroidBridge({
-      version: "0.1"
-    })
+    return new AndroidBridge()
   }
 
   if (!window.frameElement && window.parent === window) {
@@ -17,6 +15,5 @@ export function createBridge(): Bridge {
   return new IFrameBridge({
     targetOrigin: "*",
     targetWindow: window.parent,
-    version: "0.1"
   })
 }

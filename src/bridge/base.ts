@@ -2,7 +2,8 @@ import { LayersOptions } from "../app"
 
 export interface SetupRequest {
   options: LayersOptions
-  location: string
+  url: string
+  state: any
   title: string
 }
 export interface SetupResponse {

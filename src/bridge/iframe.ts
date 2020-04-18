@@ -13,7 +13,6 @@ interface Message {
 export interface Options {
   targetWindow: Window;
   targetOrigin: string;
-  version: string
 }
 
 export class IFrameBridge extends Bridge {
@@ -31,7 +30,7 @@ export class IFrameBridge extends Bridge {
     this.targetWindow = options.targetWindow
     this.targetOrigin = options.targetOrigin
 
-    this.version = options.version
+    this.version = "__LAYERS_SDK_VERSION__"
 
     this._bindedEventHandler = this._eventHandler.bind(this)
     window.addEventListener('message', this._bindedEventHandler, false)
