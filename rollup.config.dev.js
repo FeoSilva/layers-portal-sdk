@@ -2,8 +2,10 @@ import typescript from '@rollup/plugin-typescript';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import replace from '@rollup/plugin-replace';
+import { eslint } from "rollup-plugin-eslint";
 
 const plugins = [
+  eslint(),
   replace({ 
     __LAYERS_SDK_VERSION__: require("./package.json").version
   }),

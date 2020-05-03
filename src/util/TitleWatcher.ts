@@ -1,7 +1,7 @@
 class TitleWatcher {
 
-  private listeners: ((title: string) => void)[] = [];
-  private observer: MutationObserver;
+  private listeners: ((title: string | undefined) => void)[] = [];
+  private observer?: MutationObserver;
 
   constructor() {
     if (!document.querySelector('title')) {
@@ -14,15 +14,21 @@ class TitleWatcher {
   
   private setup() {
     this.observer = new MutationObserver(() => this.updateTitle());
-    this.observer.observe(document.querySelector('title'), { subtree: true, characterData: true, childList: true });
+    
+    const titleEl = document.querySelector('title')
+    if (titleEl) {
+      this.observer.observe(titleEl, { subtree: true, characterData: true, childList: true });
+    }
   }
 
-  public addListener(listener: (title: string) => void) {
+  public addListener(listener: (title: string | undefined) => void) {
     this.listeners.push(listener)
   }
 
   public destroy() {
-    this.observer.disconnect()
+    if (this.observer) {
+      this.observer.disconnect()
+    }
   }
 
   updateTitle() {

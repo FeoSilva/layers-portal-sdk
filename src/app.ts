@@ -32,11 +32,11 @@ export class LayersSDKCore {
   connected: boolean
 
   private eventTarget: EventTarget
-  private options: LayersOptions
-  private parentBridge: Bridge
+  private options?: LayersOptions
+  private parentBridge?: Bridge
   private historyWatcher: HistoryWatcher
   private titleWatcher: TitleWatcher
-  private setupResult: SetupResponse
+  private setupResult?: SetupResponse
 
   constructor() {
     if (!window) {
@@ -96,7 +96,7 @@ export class LayersSDKCore {
   }
 
   public async handle(methodName: string, payload: any) {
-    var method = this[methodName]
+    const method = this[methodName]
     if (!method || !method[SDK_METHOD_SYMBOL]) {
       throw new Error(`Method ${methodName} not found.`)
     }

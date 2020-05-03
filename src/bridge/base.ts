@@ -4,7 +4,7 @@ export interface SetupRequest {
   options: LayersOptions
   url: string
   state: any
-  title: string
+  title?: string
 }
 export interface SetupResponse {
   bridgeConnected: boolean
@@ -15,15 +15,15 @@ export interface SetupResponse {
 export default abstract class Bridge {
   ready: boolean
   
-  protected requestHandlers: Map<string, (any) => any>
-  protected options: LayersOptions
+  protected requestHandlers: Map<string, (params: any) => any>
+  protected options?: LayersOptions
 
   constructor() {
     this.requestHandlers = new Map()
     this.ready = false
   }
 
-  addRequestHandler(method: string, handler: (any) => any) {
+  addRequestHandler(method: string, handler: (params: any) => any) {
     this.requestHandlers.set(method, handler)
   }
   
