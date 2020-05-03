@@ -2,6 +2,7 @@ import HistoryWatcher from "./util/HistoryWatcher"
 import TitleWatcher from "./util/TitleWatcher"
 import { createBridge } from './bridge'
 import Bridge, { SetupResponse } from "./bridge/base"
+import createEventTarget from "./util/createEventTarget"
 
 const SDK_METHOD_SYMBOL = Symbol("IS_SDK_METHOD")
 
@@ -45,7 +46,7 @@ export class LayersSDKCore {
 
     this.ready = false
     this.connected = false
-    this.eventTarget = new EventTarget()
+    this.eventTarget = createEventTarget()
     this.historyWatcher = new HistoryWatcher()
     this.titleWatcher = new TitleWatcher()
   }
