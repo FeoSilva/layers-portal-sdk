@@ -60,9 +60,6 @@ typings/
 # next.js build output
 .next
 
-iframe.html
-parent.html
-
 # Cypress media output
 tests/e2e/screenshots
 tests/e2e/videos
