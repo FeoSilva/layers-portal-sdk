@@ -70,7 +70,7 @@ export class LayersSDKCore {
       state: history?.state,
       title: this.titleWatcher.getTitle()
     })
-    
+
     this.ready = true
     this.eventTarget.dispatchEvent(new CustomEvent("ready", {
       detail: this.setupResult

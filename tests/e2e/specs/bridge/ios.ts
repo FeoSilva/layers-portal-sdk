@@ -8,8 +8,7 @@ describe('Bridge - iOS', () => {
         $window.webkit = {
           messageHandlers: {
             LayersIosBridge: {
-              postMessage(messageString) {
-                const message: Message = JSON.parse(messageString)
+              postMessage(message) {
                 onMessageSub(message, $window)
               }
             }

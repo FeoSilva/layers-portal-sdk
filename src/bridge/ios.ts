@@ -5,7 +5,7 @@ declare global {
     webkit: {
       messageHandlers: {
         LayersIosBridge: {
-          postMessage: (messageString: string) => void
+          postMessage: (message: Message) => void
         }
       }
     }
@@ -88,7 +88,7 @@ export class IosBridge extends Bridge {
   }
 
   private _postMessage(message: Message) {
-    window.webkit.messageHandlers.LayersIosBridge.postMessage(JSON.stringify(message))
+    window.webkit.messageHandlers.LayersIosBridge.postMessage(message)
   }
 
   private _eventHandler(event: IosBridgeEvent) {
