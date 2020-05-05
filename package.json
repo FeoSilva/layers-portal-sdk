@@ -1,6 +1,6 @@
 {
   "name": "layers-sdk",
-  "version": "3.0.15",
+  "version": "3.0.18",
   "files": [
     "dist/app.js",
     "dist/app.js.map",

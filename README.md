@@ -9,18 +9,18 @@
 window.LayersOptions = {
   appId: "test-app"
 }
-!function(){if(!window.Layers){function s(n,r){return new Promise(function(e,t){s.q.push([e,t,n,r])})}s.q=[],window.Layers=s}var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="https://unpkg.com/layers-sdk@3/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
+!function(){var e;window.Layers||(window.Layers=((e=function(n,t){return new Promise((function(r,a){e.q.push([r,a,n,t])}))}).q=[],e.eh={},e.on=function(n,t){var r=e.eh[n]||[];r.push(t),e.eh[n]=r},e.ready=!1,e.connected=!1,e.platform=null,e));var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://unpkg.com/layers-sdk@3/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)}();
 </script>
 ```
 
 Example:
 ```javascript
 
-Layers('onReady', function () {
+Layers.on('ready', function () {
   // Called when SDK is ready
 })
 
-Layers('onConnected', function () {
+Layers.on('connected', function () {
   // Called when SDK connects with Layers
 })
 

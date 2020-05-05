@@ -1,8 +1,9 @@
+import typescript from '@rollup/plugin-typescript';
 import replace from '@rollup/plugin-replace';
 import { terser } from "rollup-plugin-terser";
 
 export default {
-  input: 'src/snippet.js',
+  input: 'src/snippet.ts',
   output: {
     file: 'dist/snippet.js',
     format: 'iife'
@@ -12,6 +13,7 @@ export default {
       // __LAYERS_SDK_PUBLIC_URL__: '/dist/app.js'
       __LAYERS_SDK_PUBLIC_URL__: "https://unpkg.com/layers-sdk@3/dist/app.js"
     }),
+    typescript(),
     terser({
       output: {
         comments: false

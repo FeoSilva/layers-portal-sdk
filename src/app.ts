@@ -4,8 +4,6 @@ import { createBridge } from './bridge'
 import Bridge, { SetupResponse } from "./bridge/base"
 import createEventTarget from "./util/createEventTarget"
 
-const SDK_METHOD_SYMBOL = Symbol("IS_SDK_METHOD")
-
 export interface LayersOptions {
   // ID do App
   appId: string;
@@ -19,180 +17,157 @@ export interface LayersOptions {
   manualLoadingControl: boolean;
 }
 
-/**
- * Decorator used to allow methods to be called by SDK users
- */
-export const SdkMethod = () => {
-  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
-    descriptor.value[SDK_METHOD_SYMBOL] = true
-  }
-}
+export interface LayersSDK {
+  (method: string, payload?: any): Promise<any>
 
-export class LayersSDKCore {
+  on(eventName: string, handler: (payload: any) => void): void
   ready: boolean
   connected: boolean
+  platform: string | null
+}
 
-  private eventTarget: EventTarget
-  private options?: LayersOptions
-  private parentBridge?: Bridge
-  private historyWatcher: HistoryWatcher
-  private titleWatcher: TitleWatcher
-  private setupResult?: SetupResponse
+function buildLayersSdk(): LayersSDK {
 
-  constructor() {
-    if (!window) {
-      throw new Error('Can not use Layers SDK without "window"')
-    }
+  let parentBridge: Bridge
+  let eventTarget = createEventTarget()
+  let historyWatcher: HistoryWatcher = new HistoryWatcher()
+  let titleWatcher: TitleWatcher = new TitleWatcher
+  let setupResult: SetupResponse
 
-    this.ready = false
-    this.connected = false
-    this.eventTarget = createEventTarget()
-    this.historyWatcher = new HistoryWatcher()
-    this.titleWatcher = new TitleWatcher()
+  interface RealLayersSDK extends LayersSDK {
+    ready: boolean
+    connected: boolean
+    options?: LayersOptions
   }
 
-  @SdkMethod()
-  public async setup(options: LayersOptions) {
-    if (this.ready) {
-      throw new Error("LayersSDK already set up!")
+  const METHODS: {[methodName: string]: (this: RealLayersSDK, ...params: any) => any } = {
+    async setup(options: LayersOptions) {
+      if (this.ready) {
+        throw new Error("LayersSDK already set up!")
+      }
+  
+      this.options = options
+  
+      parentBridge = createBridge()
+      parentBridge.addRequestHandler("ping", () => {
+        return "pong"
+      })
+  
+      setupResult = await parentBridge.setup({
+        options: options,
+        url: window.location.href,
+        state: history?.state,
+        title: titleWatcher.getTitle()
+      })
+  
+      this.ready = true
+      eventTarget.dispatchEvent(new CustomEvent("ready", {
+        detail: setupResult
+      }))
+      
+      if (!setupResult.bridgeConnected) {
+        return;
+      }
+  
+      this.connected = true
+      eventTarget.dispatchEvent(new CustomEvent("connected", {
+        detail: setupResult
+      }))
+  
+      historyWatcher.addListener(params => {
+        this('update', params)
+      })
+      titleWatcher.addListener(title => {
+        this('update', { title })
+      })
+  
+      historyWatcher.updateHistory()
+      titleWatcher.updateTitle()
+    },
+  
+    ping() {
+      return parentBridge.send('ping')
+    },
+  
+    getAccountToken() {
+      return parentBridge.send('getAccountToken')
+    },
+  
+    getCommunity() {
+      return parentBridge.send('getCommunity')
+    },
+  
+    update(params: { url?: string, state?: any, title?: string }) {
+      return parentBridge.send("update", params)
+    },
+  
+    async download(data: { url: string, filename: string }) {
+      return await parentBridge.download(data)
+    },
+  
+    close(payload?: any) {
+      try {
+        parentBridge.send('close', payload)
+      } catch (e) { }
+      try {
+        window.close()
+      } catch (e) { }
     }
-
-    this.options = options
-
-    this.parentBridge = createBridge()
-    this.parentBridge.addRequestHandler("ping", () => {
-      return "pong"
-    })
-
-    this.setupResult = await this.parentBridge.setup({
-      options: options,
-      url: window.location.href,
-      state: history?.state,
-      title: this.titleWatcher.getTitle()
-    })
-
-    this.ready = true
-    this.eventTarget.dispatchEvent(new CustomEvent("ready", {
-      detail: this.setupResult
-    }))
-    
-    if (!this.setupResult.bridgeConnected) {
-      return;
-    }
-
-    this.connected = true
-    this.eventTarget.dispatchEvent(new CustomEvent("connected", {
-      detail: this.setupResult
-    }))
-
-    this.historyWatcher.addListener(params => {
-      this.update(params)
-    })
-    this.titleWatcher.addListener(title => {
-      this.update({ title })
-    })
-
-    this.historyWatcher.updateHistory()
-    this.titleWatcher.updateTitle()
   }
 
-  public async handle(methodName: string, payload: any) {
-    const method = this[methodName]
-    if (!method || !method[SDK_METHOD_SYMBOL]) {
+  const _Layers: RealLayersSDK = async (methodName: string, payload?: any) => {
+    const method = METHODS[methodName]
+    if (!method) {
       throw new Error(`Method ${methodName} not found.`)
     }
 
-    return await method.bind(this)(payload)
+    return await method.bind(_Layers)(payload)
   }
 
-  @SdkMethod()
-  protected onReady(callback: Function) {
-    if (this.ready) {
-      callback(this.setupResult)
-      return
-    }
-    
-    this.eventTarget.addEventListener("ready", (event: CustomEvent) => {
-      callback(event.detail)
+  _Layers.ready = false
+  _Layers.connected = false
+  _Layers.platform = this
+  _Layers.on = (eventName: string, handler: (payload: any) => void) => {
+    eventTarget.addEventListener(eventName, (event: CustomEvent) => {
+      handler(event.detail)
     })
   }
 
-  @SdkMethod()
-  protected onConnected(callback: Function) {
-    if (this.connected) {
-      callback(this.setupResult)
-      return
-    }
-    this.eventTarget.addEventListener("connected", (event: CustomEvent) => {
-      callback(event.detail)
-    })
-  }
+  // Get commands queued before SDK was loaded
+  const commandQueue: [(resolve: any) => any, (reject: any) => any, string, any][] = (<any>window.Layers)?.q
 
-  @SdkMethod()
-  protected ping() {
-    return this.parentBridge.send('ping')
-  }
-
-  @SdkMethod()
-  protected update(params: { url?: string, state?: any, title?: string }) {
-    if (this.parentBridge.ready) {
-      this.parentBridge.send("update", params)
+  // Consume queued commands now that SDK is ready
+  if (commandQueue) {
+    for (const command of commandQueue) {
+      const [ resolve, reject, method, payload ] = command
+      _Layers(method, payload)
+        .then(resolve)
+        .catch(reject)
     }
   }
 
-  @SdkMethod()
-  protected async download(data: { url: string, filename: string }) {
-    return await this.parentBridge.download(data)
+  // Get event handlers set before SDK was loaded
+  const eventHandlers: {[eventName: string]: ((payload: any) => void)[]} = (<any>window.Layers)?.eh
+  if (eventHandlers) {
+    for (const eventName in eventHandlers) {
+      for (const handler of eventHandlers[eventName]) {
+        _Layers.on(eventName, handler)
+      }
+    }
   }
 
-  @SdkMethod()
-  protected async createPost(data: any) {
-    return await this.parentBridge.send('createPost', data)
-  }
-
-  @SdkMethod()
-  protected close(payload?: any) {
-    try {
-      this.parentBridge.send('close', payload)
-    } catch (e) { }
-    try {
-      window.close()
-    } catch (e) { }
-  }
-
-  @SdkMethod()
-  protected async createGroup(data: any) {
-    return await this.parentBridge.send('createGroup', data)
-  }
+  return _Layers
 }
-
 
 declare global {
   interface Window {
-    Layers: Function;
+    Layers: LayersSDK;
     LayersOptions: LayersOptions;
   }
 }
 
-// Get commands queued before SDK was loaded
-const commandQueue: [(any) => any, (any) => any, string, any][] = (<any>window.Layers)?.q
-
-const sdkCore = new LayersSDKCore()
-if (window.LayersOptions) {
-  sdkCore.setup(window.LayersOptions)
-}
-
 // Expose "Layers" globally
-window.Layers = function (method, payload) {
-  return sdkCore.handle(method, payload)
-}
-
-// Consume queued commands now that SDK is ready
-if (commandQueue) {
-  for (const command of commandQueue) {
-    const [ resolve, reject, method, payload ] = command
-    sdkCore.handle(method, payload)
-      .then(resolve)
-      .catch(reject)
-  }
+window.Layers = buildLayersSdk()
+if (window.LayersOptions) {
+  window.Layers('setup', window.LayersOptions)
 }
