@@ -11,10 +11,10 @@ class TitleWatcher {
       this.setup()
     }
   }
-  
+
   private setup() {
     this.observer = new MutationObserver(() => this.updateTitle());
-    
+
     const titleEl = document.querySelector('title')
     if (titleEl) {
       this.observer.observe(titleEl, { subtree: true, characterData: true, childList: true });
@@ -39,8 +39,7 @@ class TitleWatcher {
   }
 
   getTitle() {
-    const titleElement = document.querySelector('title')
-    return titleElement?.innerText
+    return document.title
   }
 
 }
