@@ -6,37 +6,37 @@
 
 ```html
 <script>
-window.LayersOptions = {
+window.LayersPortalOptions = {
   appId: "test-app"
 }
-!function(){var e;window.Layers||(window.Layers=((e=function(n,t){return new Promise((function(r,a){e.q.push([r,a,n,t])}))}).q=[],e.eh={},e.on=function(n,t){var r=e.eh[n]||[];r.push(t),e.eh[n]=r},e.ready=!1,e.connected=!1,e.platform=null,e));var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://unpkg.com/layers-sdk@3/dist/app.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)}();
+!function(){var e;window.LayersPortal||(window.LayersPortal=((e=function(t,r){return new Promise((function(n,a){e.q.push([n,a,t,r])}))}).q=[],e.eh={},e.on=function(t,r){var n=e.eh[t]||[];n.push(r),e.eh[t]=n},e.ready=!1,e.connected=!1,e.platform=null,e));var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://js.layers.digital/v1/LayersPortal.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}();
 </script>
 ```
 
 Example:
 ```javascript
 
-Layers.on('ready', function () {
+LayersPortal.on('ready', function () {
   // Called when SDK is ready
 })
 
-Layers.on('connected', function () {
+LayersPortal.on('connected', function () {
   // Called when SDK connects with Layers
 })
 
 
 /* Creating a post */
-const promise = Layers('createPost', {
+const promise = LayersPortal('createPost', {
   type: "message",
   title: "Post Title",
   text: "**Post body (markdown)**",
 })
 
 /* Creating a group */
-const promise = Layers('createGroup')
+const promise = LayersPortal('createGroup')
 
 /* Closing window */
-const promise = Layers('close')
+const promise = LayersPortal('close')
 
 /* Using async/await */
 try {

@@ -6,13 +6,13 @@ import { eslint } from "rollup-plugin-eslint";
 export default {
   input: 'src/app.ts',
   output: {
-    dir: 'dist',
+    file: 'dist/LayersPortal.js',
     format: 'iife',
     sourcemap: true
   },
   plugins: [
     eslint(),
-    replace({ 
+    replace({
       __LAYERS_SDK_VERSION__: require("./package.json").version
     }),
     typescript(),

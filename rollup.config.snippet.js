@@ -9,9 +9,8 @@ export default {
     format: 'iife'
   },
   plugins: [
-    replace({ 
-      // __LAYERS_SDK_PUBLIC_URL__: '/dist/app.js'
-      __LAYERS_SDK_PUBLIC_URL__: "https://unpkg.com/layers-sdk@3/dist/app.js"
+    replace({
+      __LAYERS_PORTAL_SDK_PUBLIC_URL__: "https://js.layers.digital/v1/LayersPortal.js"
     }),
     typescript(),
     terser({

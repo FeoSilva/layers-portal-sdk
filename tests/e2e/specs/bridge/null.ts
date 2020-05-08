@@ -4,7 +4,7 @@ describe('Bridges - Null', () => {
 
     cy.window().then(async $window => {
       try {
-        await $window.Layers('ping')
+        await $window.LayersPortal('ping')
         assert.fail("It should have thrown an error")
       } catch (error) {}
     })

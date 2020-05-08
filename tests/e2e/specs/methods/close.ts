@@ -6,8 +6,8 @@ describe(`Layers('close')`, () => {
     cy.getIframeWindow().then($window => {
       $window.close = windowCloseStub
 
-      $window.Layers('close')
-      
+      $window.LayersPortal('close')
+
       cy.getIframeWindow().should(() => {
         expect(windowCloseStub).to.be.called
       })
@@ -23,8 +23,8 @@ describe(`Layers('close')`, () => {
     })
 
     cy.getIframeWindow().then($window => {
-      $window.Layers('close')
-      
+      $window.LayersPortal('close')
+
       cy.getIframeWindow().should(() => {
         expect(onMessageStub).to.be.called
       })

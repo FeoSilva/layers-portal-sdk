@@ -58,7 +58,7 @@ describe('Bridge - Android', () => {
     })
 
     cy.window().then(async $window => {
-      const res = await $window.Layers('ping')
+      const res = await $window.LayersPortal('ping')
       expect(res).to.be.equal("pong")
     })
   })

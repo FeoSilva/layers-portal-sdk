@@ -1,7 +1,7 @@
-import { LayersOptions } from "../app"
+import { LayersPortalOptions } from "../app"
 
 export interface SetupRequest {
-  options: LayersOptions
+  options: LayersPortalOptions
   url: string
   state: any
   title?: string
@@ -14,9 +14,9 @@ export interface SetupResponse {
 
 export default abstract class Bridge {
   ready: boolean
-  
+
   protected requestHandlers: Map<string, (params: any) => any>
-  protected options?: LayersOptions
+  protected options?: LayersPortalOptions
 
   constructor() {
     this.requestHandlers = new Map()
@@ -26,7 +26,7 @@ export default abstract class Bridge {
   addRequestHandler(method: string, handler: (params: any) => any) {
     this.requestHandlers.set(method, handler)
   }
-  
+
   abstract send(method: string, payload?: any, timeout?: number): Promise<any>
 
   abstract getPlatform(): string
@@ -39,7 +39,7 @@ export default abstract class Bridge {
     if (this.ready) {
       throw new Error("LayersSDK already set up!")
     }
-    
+
     this.options = params.options
     const response = await this.send("setup", params)
 

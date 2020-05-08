@@ -1,13 +1,13 @@
 {
-  "name": "layers-sdk",
-  "version": "3.0.18",
+  "name": "layers-portal-sdk",
+  "version": "1.0.0",
   "files": [
-    "dist/app.js",
-    "dist/app.js.map",
+    "dist/LayersPortal.js",
+    "dist/LayersPortal.js.map",
     "src"
   ],
-  "main": "index.js",
-  "repository": "https://github.com/layers-digital/layers-sdk-javascript",
+  "main": "dist/LayersPortal.js",
+  "repository": "https://github.com/layers-digital/layers-portal-sdk",
   "author": "Layers Education",
   "license": "GPL-3.0-or-later",
   "scripts": {

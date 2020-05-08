@@ -1,8 +1,6 @@
-import { LayersSDK } from './app'
-
-// Declare dump window.Layers to queue up commands until real SDK is loaded
-if (!window.Layers) {
-  window.Layers = (() => {
+// Declare dumb window.LayersPortal to queue up commands until real SDK is loaded
+if (!window.LayersPortal) {
+  window.LayersPortal = (() => {
     const _Layers = (method: string, payload?: any) => {
       return new Promise(function(resolve, reject) {
         _Layers['q'].push([resolve, reject, method, payload])
@@ -26,7 +24,7 @@ if (!window.Layers) {
 const scriptEl = document.createElement("script")
 scriptEl.type = "text/javascript"
 scriptEl.async = true
-scriptEl.src = "__LAYERS_SDK_PUBLIC_URL__"
+scriptEl.src = "__LAYERS_PORTAL_SDK_PUBLIC_URL__"
 
 const firstScriptEl = document.getElementsByTagName("script")[0];
 firstScriptEl.parentNode.insertBefore(scriptEl, firstScriptEl)
