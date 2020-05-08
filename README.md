@@ -1,7 +1,7 @@
-# Layers SDK for JavaScript v1
+# Layers Portal SDK for JavaScript v1
 
-![npm](https://img.shields.io/npm/v/layers-sdk)
-![NPM](https://img.shields.io/npm/l/layers-sdk)
+![npm](https://img.shields.io/npm/v/layers-portal-sdk)
+![NPM](https://img.shields.io/npm/l/layers-portal-sdk)
 
 
 ```html
