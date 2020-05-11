@@ -97,6 +97,10 @@ function buildLayersSdk(): LayersPortalSDK {
       return parentBridge.send('getCommunity')
     },
 
+    ready() {
+      return parentBridge.send('ready')
+    },
+
     update(params: { url?: string, state?: any, title?: string }) {
       return parentBridge.send("update", params)
     },
