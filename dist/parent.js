@@ -163,7 +163,7 @@ var IFrameBridge = /** @class */ (function (_super) {
         _this.pendingMessages = {};
         _this.targetWindow = options.targetWindow;
         _this.targetOrigin = options.targetOrigin;
-        _this.version = "3.0.18";
+        _this.version = "1.0.3";
         _this._bindedEventHandler = _this._eventHandler.bind(_this);
         window.addEventListener('message', _this._bindedEventHandler, false);
         return _this;
@@ -226,6 +226,9 @@ var IFrameBridge = /** @class */ (function (_super) {
         _window.postMessage(serializedMessage, targetOrigin);
     };
     IFrameBridge.prototype._eventHandler = function (event) {
+        if (event.source !== this.targetWindow) {
+            return;
+        }
         var message;
         try {
             message = MessageSerializer$1.deserialize(event.data);

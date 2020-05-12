@@ -91,6 +91,10 @@ export class IFrameBridge extends Bridge {
   }
 
   private _eventHandler(event: MessageEvent) {
+    if (event.source !== this.targetWindow) {
+      return;
+    }
+
     let message: Message
     try {
       message = MessageSerializer.deserialize(event.data)

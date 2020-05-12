@@ -1,6 +1,6 @@
 {
   "name": "layers-portal-sdk",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "files": [
     "dist/LayersPortal.js",
     "dist/LayersPortal.js.map",
