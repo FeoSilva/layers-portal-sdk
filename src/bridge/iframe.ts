@@ -15,12 +15,18 @@ export interface Options {
   targetOrigin: string;
 }
 
+export const LAYERS_PORTAL_INNER_LOCATION_BASE_KEY = "__layers_portal_inner_location_base__"
+export const LAYERS_PORTAL_LOCATION_KEY = "__layers_portal_location__"
+
 export class IFrameBridge extends Bridge {
   private pendingMessages: {}
   private targetWindow: any
   private targetOrigin: any
   private version: any
   private _bindedEventHandler: EventListener
+
+  private layersPortalLocation?: string
+  private layersPortalInnerLocationBase?: string
 
   constructor(options: Options) {
     super()
@@ -44,7 +50,23 @@ export class IFrameBridge extends Bridge {
     if (window === this.targetWindow) {
       throw new Error("Target must be a different Window")
     }
-    return await super.setup(params)
+    const result = await super.setup(params)
+
+    this.layersPortalLocation = result.payload?.layersPortalLocation
+    this.layersPortalInnerLocationBase = result.payload?.layersPortalInnerLocationBase
+    window.addEventListener('focus', () => this.setLocalStorage())
+    this.setLocalStorage()
+
+    return result
+  }
+
+  private setLocalStorage() {
+    if (this.layersPortalLocation) {
+      localStorage[LAYERS_PORTAL_LOCATION_KEY] = this.layersPortalLocation
+    }
+    if (this.layersPortalInnerLocationBase) {
+      localStorage[LAYERS_PORTAL_INNER_LOCATION_BASE_KEY] = this.layersPortalInnerLocationBase
+    }
   }
 
   destroy() {

@@ -108,7 +108,8 @@ var Bridge = /** @class */ (function () {
                         }
                         return [2 /*return*/, {
                                 bridgeConnected: true,
-                                platform: this.getPlatform()
+                                platform: this.getPlatform(),
+                                payload: response.payload
                             }];
                 }
             });
@@ -156,6 +157,8 @@ var MessageSerializer = /** @class */ (function () {
 }());
 var MessageSerializer$1 = new MessageSerializer();
 
+var LAYERS_PORTAL_INNER_LOCATION_BASE_KEY = "__layers_portal_inner_location_base__";
+var LAYERS_PORTAL_LOCATION_KEY = "__layers_portal_location__";
 var IFrameBridge = /** @class */ (function (_super) {
     __extends(IFrameBridge, _super);
     function IFrameBridge(options) {
@@ -163,7 +166,7 @@ var IFrameBridge = /** @class */ (function (_super) {
         _this.pendingMessages = {};
         _this.targetWindow = options.targetWindow;
         _this.targetOrigin = options.targetOrigin;
-        _this.version = "1.0.3";
+        _this.version = "1.0.4";
         _this._bindedEventHandler = _this._eventHandler.bind(_this);
         window.addEventListener('message', _this._bindedEventHandler, false);
         return _this;
@@ -172,18 +175,35 @@ var IFrameBridge = /** @class */ (function (_super) {
         return "iframe";
     };
     IFrameBridge.prototype.setup = function (params) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var result;
+            var _this = this;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         if (window === this.targetWindow) {
                             throw new Error("Target must be a different Window");
                         }
                         return [4 /*yield*/, _super.prototype.setup.call(this, params)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        result = _c.sent();
+                        this.layersPortalLocation = (_a = result.payload) === null || _a === void 0 ? void 0 : _a.layersPortalLocation;
+                        this.layersPortalInnerLocationBase = (_b = result.payload) === null || _b === void 0 ? void 0 : _b.layersPortalInnerLocationBase;
+                        window.addEventListener('focus', function () { return _this.setLocalStorage(); });
+                        this.setLocalStorage();
+                        return [2 /*return*/, result];
                 }
             });
         });
+    };
+    IFrameBridge.prototype.setLocalStorage = function () {
+        if (this.layersPortalLocation) {
+            localStorage[LAYERS_PORTAL_LOCATION_KEY] = this.layersPortalLocation;
+        }
+        if (this.layersPortalInnerLocationBase) {
+            localStorage[LAYERS_PORTAL_INNER_LOCATION_BASE_KEY] = this.layersPortalInnerLocationBase;
+        }
     };
     IFrameBridge.prototype.destroy = function () {
         if (this._bindedEventHandler) {

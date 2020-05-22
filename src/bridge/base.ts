@@ -51,7 +51,8 @@ export default abstract class Bridge {
 
     return {
       bridgeConnected: true,
-      platform: this.getPlatform()
+      platform: this.getPlatform(),
+      payload: response.payload
     }
   }
 }

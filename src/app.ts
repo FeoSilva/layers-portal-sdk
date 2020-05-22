@@ -32,11 +32,11 @@ function buildLayersSdk(): LayersPortalSDK {
   let eventTarget = createEventTarget()
   let historyWatcher: HistoryWatcher = new HistoryWatcher()
   let titleWatcher: TitleWatcher = new TitleWatcher
-  let setupResult: SetupResponse
 
   interface RealLayersSDK extends LayersPortalSDK {
     ready: boolean
     connected: boolean
+    setupResult: SetupResponse
     options?: LayersPortalOptions
   }
 
@@ -53,7 +53,7 @@ function buildLayersSdk(): LayersPortalSDK {
         return "pong"
       })
 
-      setupResult = await parentBridge.setup({
+      this.setupResult = await parentBridge.setup({
         options: options,
         url: window.location.href,
         state: history?.state,
@@ -62,16 +62,16 @@ function buildLayersSdk(): LayersPortalSDK {
 
       this.ready = true
       eventTarget.dispatchEvent(new CustomEvent("ready", {
-        detail: setupResult
+        detail: this.setupResult
       }))
 
-      if (!setupResult.bridgeConnected) {
+      if (!this.setupResult.bridgeConnected) {
         return;
       }
 
       this.connected = true
       eventTarget.dispatchEvent(new CustomEvent("connected", {
-        detail: setupResult
+        detail: this.setupResult
       }))
 
       historyWatcher.addListener(params => {
@@ -130,6 +130,7 @@ function buildLayersSdk(): LayersPortalSDK {
 
   _Layers.ready = false
   _Layers.connected = false
+  _Layers.setupResult = null
   _Layers.platform = this
   _Layers.on = (eventName: string, handler: (payload: any) => void) => {
     eventTarget.addEventListener(eventName, (event: CustomEvent) => {
