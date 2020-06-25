@@ -1,42 +1,36 @@
-# Layers Portal SDK for JavaScript v1
+# Layers SDK for JavaScript v1
 
-![npm](https://img.shields.io/npm/v/layers-portal-sdk)
-![NPM](https://img.shields.io/npm/l/layers-portal-sdk)
+![npm](https://img.shields.io/npm/v/layers-sdk)
+![NPM](https://img.shields.io/npm/l/layers-sdk)
 
 
 ```html
 <script>
-window.LayersPortalOptions = {
-  appId: "test-app"
-}
-!function(){var e;window.LayersPortal||(window.LayersPortal=((e=function(t,r){return new Promise((function(n,a){e.q.push([n,a,t,r])}))}).q=[],e.eh={},e.on=function(t,r){var n=e.eh[t]||[];n.push(r),e.eh[t]=n},e.ready=!1,e.connected=!1,e.platform=null,e));var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://js.layers.digital/v1/LayersPortal.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}();
+!function(){var n;window.Layers=window.Layers||(n=function(n,t,e){return new Promise((r,u)=>{func.q.push([r,u,n,t,e])})},func=function(){return n("root",...arguments)},func.q=[],func.ui=function(){return n("ui",...arguments)},func.api=function(){return n("api",...arguments)},func);var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://unpkg.com/layers-sdk@2/dist/app.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
 </script>
 ```
 
 Example:
 ```javascript
-
-LayersPortal.on('ready', function () {
-  // Called when SDK is ready
-})
-
-LayersPortal.on('connected', function () {
-  // Called when SDK connects with Layers
+/* Setting up Layers SDK */
+await Layers('boot', {
+  appId: "", // Your APP's ID
+  appKey: "" // Your APP's secret key
 })
 
 
 /* Creating a post */
-const promise = LayersPortal('createPost', {
+const promise = Layers.ui('createPost', {
   type: "message",
   title: "Post Title",
   text: "**Post body (markdown)**",
 })
 
 /* Creating a group */
-const promise = LayersPortal('createGroup')
+const promise = Layers.ui('createGroup')
 
 /* Closing window */
-const promise = LayersPortal('close')
+const promise = Layers.ui('close')
 
 /* Using async/await */
 try {
